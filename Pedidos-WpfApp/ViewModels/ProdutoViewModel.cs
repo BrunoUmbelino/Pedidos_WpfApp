@@ -23,9 +23,9 @@ namespace Pedidos_WpfApp.ViewModels
 
             NovoProdutoCommand = new RelayCommand(NovoProduto);
             IncluirCommand = new RelayCommand(IncluirProduto);
-            EditarCommand = new RelayCommand(EditarProduto, CanEditarOuExcluir);
-            SalvarCommand = new RelayCommand(SalvarProduto, CanSalvar);
-            ExcluirCommand = new RelayCommand(ExcluirProduto, CanEditarOuExcluir);
+            EditarCommand = new RelayCommand(EditarProduto, PodeEditarOuExcluir);
+            SalvarCommand = new RelayCommand(SalvarProduto, PodeSalvar);
+            ExcluirCommand = new RelayCommand(ExcluirProduto, PodeEditarOuExcluir);
 
             PesquisarCommand = new RelayCommand(PesquisarProdutos);
             LimparFiltrosCommand = new RelayCommand(LimparFiltros);
@@ -91,7 +91,7 @@ namespace Pedidos_WpfApp.ViewModels
             get
             {
                 if (ProdutoSelecionado == null)
-                    return true; 
+                    return true;
 
                 return ProdutoSelecionado.Id == 0 || ModoEdicao;
             }
@@ -118,6 +118,9 @@ namespace Pedidos_WpfApp.ViewModels
                 Codigo = ProdutoSelecionado.Codigo,
                 Valor = ProdutoSelecionado.Valor
             });
+
+            System.Windows.MessageBox.Show("Produto salvo com sucesso!", "Sucesso",
+                System.Windows.MessageBoxButton.OK, System.Windows.MessageBoxImage.Information);
 
             NovoProduto();
             PesquisarProdutos();
@@ -200,14 +203,14 @@ namespace Pedidos_WpfApp.ViewModels
             OnPropertyChanged(nameof(CamposEditaveis));
         }
 
-        private bool CanEditarOuExcluir()
+        private bool PodeEditarOuExcluir()
         {
             return ProdutoSelecionado?.Id > 0 && !ModoEdicao;
         }
 
-        private bool CanSalvar()
+        private bool PodeSalvar()
         {
-            return ModoEdicao  && 
+            return ModoEdicao &&
                     ProdutoSelecionado != null &&
                    !string.IsNullOrWhiteSpace(ProdutoSelecionado.Nome) &&
                    !string.IsNullOrWhiteSpace(ProdutoSelecionado.Codigo) &&
