@@ -9,15 +9,14 @@ namespace Pedidos_WpfApp.Services
 {
     public class PessoaService
     {
-        private readonly string _pessoasFilePath;
+        private readonly string _fileName = "pessoas.json";
         private List<Pessoa> _pessoas;
         private int _nextId = 1;
 
         public PessoaService()
         {
-            _pessoasFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "pessoas.json");
-            _pessoas = new List<Pessoa>();
-            CarregarPessoas();
+            _pessoas = DataService<Pessoa>.CarregarDados(_fileName);
+            _nextId = _pessoas.Any() ? _pessoas.Max(p => p.Id) + 1 : 1;
         }
 
         public List<Pessoa> ObterTodasAsPessoas()
@@ -29,7 +28,7 @@ namespace Pedidos_WpfApp.Services
         {
             pessoa.Id = _nextId++;
             _pessoas.Add(pessoa);
-            SalvarPessoas();
+            DataService<Pessoa>.SalvarDados(_pessoas, _fileName);
         }
 
         public void EditarPessoa(Pessoa pessoa)
@@ -40,7 +39,7 @@ namespace Pedidos_WpfApp.Services
                 pessoaExistente.Nome = pessoa.Nome;
                 pessoaExistente.CPF = pessoa.CPF;
                 pessoaExistente.Endereco = pessoa.Endereco;
-                SalvarPessoas();
+                DataService<Pessoa>.SalvarDados(_pessoas, _fileName);
             }
         }
 
@@ -50,7 +49,7 @@ namespace Pedidos_WpfApp.Services
             if (pessoa != null)
             {
                 _pessoas.Remove(pessoa);
-                SalvarPessoas();
+                DataService<Pessoa>.SalvarDados(_pessoas, _fileName);
             }
         }
 
@@ -67,48 +66,5 @@ namespace Pedidos_WpfApp.Services
             return query.ToList();
         }
 
-        private void SalvarPessoas()
-        {
-            try
-            {
-                var settings = new JsonSerializerSettings
-                {
-                    Formatting = Formatting.Indented
-                };
-
-                var json = JsonConvert.SerializeObject(_pessoas, settings);
-                Directory.CreateDirectory(Path.GetDirectoryName(_pessoasFilePath));
-                File.WriteAllText(_pessoasFilePath, json);
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao salvar pessoas: {ex.Message}");
-            }
-        }
-
-        private void CarregarPessoas()
-        {
-            try
-            {
-                if (!File.Exists(_pessoasFilePath))
-                {
-                    Directory.CreateDirectory(Path.GetDirectoryName(_pessoasFilePath));
-                    return;
-                }
-
-                var json = File.ReadAllText(_pessoasFilePath);
-                if (!string.IsNullOrWhiteSpace(json))
-                {
-                    _pessoas = JsonConvert.DeserializeObject<List<Pessoa>>(json) ?? new List<Pessoa>();
-                }
-
-                _nextId = _pessoas.Any() ? _pessoas.Max(p => p.Id) + 1 : 1;
-            }
-            catch (Exception ex)
-            {
-                System.Diagnostics.Debug.WriteLine($"Erro ao carregar pessoas: {ex.Message}");
-                _pessoas = new List<Pessoa>();
-            }
-        }
     }
 }

@@ -40,6 +40,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Data.Services" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -59,6 +60,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\Pessoa.cs" />
+    <Compile Include="Services\DataService.cs" />
     <Compile Include="Services\PessoaService.cs" />
     <Compile Include="Services\ProdutoService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
